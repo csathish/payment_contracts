@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Interaction</title>
+</head>
+<body>
+    <h1>MetaMask Interaction</h1>
+    <button id="connectWallet">Connect to MetaMask/TrustWallet</button>
+    <button id="subscribeButton">Subscribe</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.3.6/dist/web3.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            let web3;
+            
+            // Check if MetaMask is installed
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                try {
+                    // Request account access if needed
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                } catch (error) {
+                    console.error('User denied account access');
+                }
+            } else if (window.web3) {
+                // Legacy dApp browsers
+                web3 = new Web3(web3.currentProvider);
+            } else if (window.web3) {
+                console.error('No MetaMask or other web3 provider detected');
+                return;
+            }
+
+            // Use web3 to get the user's accounts
+            const accounts = await web3.eth.getAccounts();
+            console.log('Connected account:', accounts[0]);
+
+            // Load the smart contract
+            const contractAddress = <<contract address>>;
+            const contractABI = << Contract ABI >>
+
+            const myContract = new web3.eth.Contract(contractABI, contractAddress);
+
+            // Connect to MetaMask button click event
+            document.getElementById('connectWallet').addEventListener('click', async () => {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    console.log('Connected account:', accounts[0]);
+                } catch (error) {
+                    console.error('User denied account access');
+                }
+            });
+
+            const subscriptionContract = new web3.eth.Contract(contractABI, contractAddress);
+
+            document.getElementById('subscribeButton').addEventListener('click', async () => {
+                    try {
+                        // Send 5 ETH to the subscribe function
+                        const transaction = await subscriptionContract.methods.subscribe().send({
+                            from: (await web3.eth.getAccounts())[0]
+                        });
+
+                        console.log('Transaction Hash:', transaction.transactionHash);
+
+                        // Listen for the SubscriptionPaid event
+                        subscriptionContract.events.SubscriptionPaid({
+                            fromBlock: 'latest'
+                        }, (error, event) => {
+                            if (!error) {
+                                console.log('SubscriptionPaid Event:', event.returnValues.subscriber);
+                            } else {
+                                console.error('Error:', error);
+                            }
+                        });
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                }
+            
+            );
+        });
+    </script>
+</body>
+</html>
